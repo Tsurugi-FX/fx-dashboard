@@ -662,6 +662,141 @@
       padding:14px 16px;
       line-height:1.9;
     }
+
+    /* ===== 重要指標カレンダー ===== */
+    .cal-table-wrap{
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      border-radius:14px;
+      border:1px solid var(--border);
+      box-shadow:0 10px 24px rgba(26,23,20,.05);
+    }
+
+    .cal-table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      font-size:13px;
+    }
+
+    .cal-table thead th{
+      background:var(--bg2);
+      color:var(--ink3);
+      font-family:var(--head);
+      font-size:10px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      padding:10px 14px;
+      text-align:left;
+      white-space:nowrap;
+      border-bottom:1px solid var(--border);
+    }
+
+    .cal-table tbody tr{
+      border-bottom:1px solid var(--border);
+      transition:background .12s;
+    }
+
+    .cal-table tbody tr:last-child{
+      border-bottom:none;
+    }
+
+    .cal-table tbody tr:hover{
+      background:var(--bg);
+    }
+
+    /* HIGH 行は左に赤いアクセントライン */
+    .cal-table tbody tr.cal-high{
+      background:linear-gradient(90deg,rgba(185,28,58,.04) 0%,#fff 32px);
+      border-left:3px solid var(--bear);
+    }
+
+    .cal-table tbody tr.cal-high:hover{
+      background:linear-gradient(90deg,rgba(185,28,58,.08) 0%,var(--bg) 32px);
+    }
+
+    .cal-table td{
+      padding:11px 14px;
+      vertical-align:middle;
+      color:var(--ink2);
+      white-space:nowrap;
+    }
+
+    .cal-date{
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--ink3);
+    }
+
+    .cal-time{
+      font-family:var(--mono);
+      font-size:13px;
+      font-weight:700;
+      color:var(--ink);
+    }
+
+    .cal-currency{
+      font-family:var(--mono);
+      font-size:12px;
+      font-weight:700;
+      color:var(--accent);
+      background:var(--accent-bg);
+      border-radius:6px;
+      padding:3px 8px;
+      display:inline-block;
+    }
+
+    .cal-event{
+      font-size:13px;
+      font-weight:700;
+      color:var(--ink);
+      min-width:100px;
+    }
+
+    /* impact バッジ */
+    .cal-impact{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      padding:3px 10px;
+      border-radius:999px;
+      font-family:var(--head);
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-weight:700;
+      border:1px solid;
+      white-space:nowrap;
+    }
+
+    .cal-impact.high{
+      background:rgba(185,28,58,.10);
+      color:var(--bear);
+      border-color:rgba(185,28,58,.28);
+    }
+
+    .cal-impact.medium{
+      background:var(--warn-bg);
+      color:var(--warn);
+      border-color:rgba(180,83,9,.28);
+    }
+
+    .cal-impact.low{
+      background:var(--bg2);
+      color:var(--ink3);
+      border-color:var(--border);
+    }
+
+    .cal-empty{
+      padding:28px 0;
+      text-align:center;
+      color:var(--ink3);
+      font-size:13px;
+      background:#fff;
+      border-radius:14px;
+      border:1px solid var(--border);
+    }
+    /* ============================= */
   </style>
 </head>
 <body>
@@ -759,6 +894,16 @@
           毎朝チェックする →
         </a>
       </div>  
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-title">📅 重要指標カレンダー</div>
+          <div class="section-sub">直近の高インパクト指標を確認し、エントリー前後のリスク管理に役立ててください。</div>
+        </div>
+      </div>
+      <div id="calendarSection"></div>
     </section>
 
     <section class="section">
@@ -912,6 +1057,67 @@
       `).join('');
     }
 
+    // ===== 重要指標カレンダー =====
+    function impactClass(impact){
+      const v = (impact || '').toUpperCase();
+      if(v === 'HIGH')   return 'high';
+      if(v === 'MEDIUM') return 'medium';
+      return 'low';
+    }
+
+    function impactIcon(impact){
+      const v = (impact || '').toUpperCase();
+      if(v === 'HIGH')   return '🔴';
+      if(v === 'MEDIUM') return '🟡';
+      return '🟢';
+    }
+
+    function renderCalendar(events){
+      const wrap = document.getElementById('calendarSection');
+      if(!wrap) return;
+
+      const list = Array.isArray(events) ? events : [];
+
+      if(list.length === 0){
+        wrap.innerHTML = '<div class="cal-empty">📭 登録された重要指標はありません</div>';
+        return;
+      }
+
+      const rows = list.map(ev => {
+        const ic = impactClass(ev.impact);
+        const isHigh = ic === 'high';
+        return `
+          <tr class="${isHigh ? 'cal-high' : ''}">
+            <td><span class="cal-date">${escapeHtml(ev.date || '-')}</span></td>
+            <td><span class="cal-time">${escapeHtml(ev.time || '-')}</span></td>
+            <td><span class="cal-currency">${escapeHtml(ev.currency || '-')}</span></td>
+            <td><span class="cal-event">${escapeHtml(ev.event || '-')}</span></td>
+            <td>
+              <span class="cal-impact ${ic}">
+                ${impactIcon(ev.impact)} ${escapeHtml(ev.impact || '-')}
+              </span>
+            </td>
+          </tr>`;
+      }).join('');
+
+      wrap.innerHTML = `
+        <div class="cal-table-wrap">
+          <table class="cal-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Currency</th>
+                <th>Event</th>
+                <th>Impact</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    }
+    // ==============================
+
     function renderHistory(history){
       const container = document.getElementById('history');
       if(!container) return;
@@ -953,6 +1159,7 @@
 
       let history = [];
       let reports = [];
+      let calendar = [];
 
       try {
         history = await safeJsonFetch('./history.json?' + cacheBuster);
@@ -964,6 +1171,12 @@
         reports = await safeJsonFetch('./reports.json?' + cacheBuster);
       } catch (e) {
         console.warn('reports.json の読み込みをスキップ:', e);
+      }
+
+      try {
+        calendar = await safeJsonFetch('./calendar.json?' + cacheBuster);
+      } catch (e) {
+        console.warn('calendar.json の読み込みをスキップ（ファイルがない場合は正常）:', e);
       }
 
       document.getElementById('today').textContent = latest.date || '-';
@@ -988,6 +1201,7 @@
       quickWaitEl.className = 'quick-value wait';
 
       renderPairs(latest.pairs || []);
+      renderCalendar(calendar || []);
       renderHistory(history || []);
       renderReports(reports || []);
 
