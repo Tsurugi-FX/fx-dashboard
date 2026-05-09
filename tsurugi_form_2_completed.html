@@ -339,8 +339,19 @@ input[type=date]:focus{outline:none;border-color:var(--gold);}
         <button class="gh-dl-btn" onclick="ghDownload('history')">⬇ DL</button>
       </div>
 
+      <div class="gh-file">
+        <div class="gh-file-info">
+          <span class="gh-file-icon">📅</span>
+          <div>
+            <div class="gh-file-name">calendar.json</div>
+            <div class="gh-file-status ready" id="gh-st-calendar">✅ 生成済み</div>
+          </div>
+        </div>
+        <button class="gh-dl-btn" onclick="ghDownload('calendar')">⬇ DL</button>
+      </div>
+
     </div>
-    <button class="gh-dl-all" onclick="ghDownloadAll()">⬇ 全ファイルまとめてDL（5ファイル）</button>
+    <button class="gh-dl-all" onclick="ghDownloadAll()">⬇ 全ファイルまとめてDL（6ファイル）</button>
     <div class="gh-hint">
       💡 ダウンロードしたファイルを GitHub リポジトリにドラッグ&ドロップ → Commit changes<br>
       　 reports.json は「reports.jsonタブ」で統合後にDLしてください
@@ -362,6 +373,7 @@ input[type=date]:focus{outline:none;border-color:var(--gold);}
   <div class="tab" onclick="switchTab(5)">reports.json</div>
   <div class="tab" onclick="switchTab(6)">history.json</div>
   <div class="tab" onclick="switchTab(7)">📊 履歴DB</div>
+  <div class="tab" onclick="switchTab(8)">📅 calendar.json</div>
 </div>
 <div class="tc on" id="tc0"><div class="obox" id="o0"><span class="ph">ロング%を入力して生成ボタンを押してください</span></div><button class="cbtn" onclick="copyOut(0)">コピー</button></div>
 <div class="tc" id="tc1"><div class="obox" id="o1"><span class="ph">ロング%を入力して生成ボタンを押してください</span></div><button class="cbtn" onclick="copyOut(1)">コピー</button></div>
@@ -425,6 +437,34 @@ input[type=date]:focus{outline:none;border-color:var(--gold);}
     </table>
   </div>
 </div>
+
+<!-- ===== calendar.json タブ (tc8) ===== -->
+<div class="tc" id="tc8">
+  <div style="font-size:12px;color:var(--ink2);font-family:'Share Tech Mono',monospace;margin-bottom:10px;letter-spacing:0.04em;">
+    📅 重要指標カレンダー入力（最大5件）— 空欄行は出力されません
+  </div>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;font-family:'Share Tech Mono',monospace;">
+      <thead>
+        <tr>
+          <th style="padding:7px 8px;background:var(--bg3);color:var(--ink2);border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;">#</th>
+          <th style="padding:7px 8px;background:var(--bg3);color:var(--ink2);border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;">date</th>
+          <th style="padding:7px 8px;background:var(--bg3);color:var(--ink2);border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;">time</th>
+          <th style="padding:7px 8px;background:var(--bg3);color:var(--ink2);border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;">currency</th>
+          <th style="padding:7px 8px;background:var(--bg3);color:var(--ink2);border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;">event</th>
+          <th style="padding:7px 8px;background:var(--bg3);color:var(--ink2);border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;">impact</th>
+        </tr>
+      </thead>
+      <tbody id="cal-tbody"></tbody>
+    </table>
+  </div>
+  <button class="cbtn" onclick="buildCalendarJson()" style="margin-top:10px;color:var(--gold);border-color:var(--gold);font-weight:700;">⚡ calendar.json を生成</button>
+  <div style="font-size:11px;color:var(--ink3);font-family:'Share Tech Mono',monospace;margin:8px 0 4px;letter-spacing:0.04em;">プレビュー</div>
+  <div class="obox" id="o-cal" style="max-height:260px;"><span class="ph">上で入力して「calendar.json を生成」を押してください</span></div>
+  <button class="cbtn" onclick="copyCalendar()">コピー</button>
+  <button class="dlbtn" style="margin-top:6px;" onclick="ghDownload('calendar')">⬇ calendar.json をダウンロード</button>
+</div>
+
 </div>
 
 <script>
@@ -902,9 +942,9 @@ document.getElementById('l2').addEventListener('input', function(){ updCalc(2); 
 function switchTab(idx) {
   var tabs = document.querySelectorAll('.tab');
   var tcs = document.querySelectorAll('.tc');
-  for(var i=0;i<8;i++){
-    tabs[i].className = 'tab' + (i===idx?' on':'');
-    tcs[i].className = 'tc' + (i===idx?' on':'');
+  for(var i=0;i<9;i++){
+    if(tabs[i]) tabs[i].className = 'tab' + (i===idx?' on':'');
+    if(tcs[i])  tcs[i].className  = 'tc'  + (i===idx?' on':'');
   }
   if(idx === 7) dbRender();
 }
@@ -1872,6 +1912,13 @@ function ghDownload(type) {
   } else if(type === 'history') {
     content  = document.getElementById('o6').textContent;
     filename = 'history.json';
+  } else if(type === 'calendar') {
+    content  = document.getElementById('o-cal').textContent;
+    filename = 'calendar.json';
+    if(!content || content.includes('押してください') || content === '[]') {
+      alert('calendar.json タブで「⚡ calendar.json を生成」を押してから DL してください');
+      return;
+    }
   }
   if(!content) return;
   dlFile(content, filename);
@@ -1891,6 +1938,11 @@ function ghDownloadAll() {
   dl(buildReportsJsonText(), 'reports.json');
   dl(document.getElementById('o6').textContent, 'history.json');
   dl(document.getElementById('o2').textContent, 'report-'+(window._dtUrl||'report')+'.html', 'text/html;charset=utf-8');
+  // calendar.json — 未生成の場合はスキップ
+  var calContent = document.getElementById('o-cal').textContent;
+  if(calContent && !calContent.includes('押してください')) {
+    dl(calContent, 'calendar.json');
+  }
 }
 
 // reports.json完成版が生成されたらDLボタンを有効化
@@ -1901,7 +1953,94 @@ function activateReportsDownload() {
   if(st)  { st.textContent = '✅ 生成済み'; st.className = 'gh-file-status ready'; }
 }
 
+// =====================================================
+// ===== calendar.json 機能 =====
+// =====================================================
+var CAL_ROWS = 5;
+var CAL_IMPACT_OPTS = ['HIGH','MEDIUM','LOW'];
+var CAL_CURRENCY_OPTS = ['USD','EUR','GBP','JPY','AUD','CAD','CHF','NZD','CNY','OTHER'];
 
-</script>
+// カレンダー入力行を生成
+function initCalendarRows() {
+  var tbody = document.getElementById('cal-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  for(var r = 0; r < CAL_ROWS; r++) {
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="padding:5px 6px;border-bottom:1px solid var(--border);color:var(--ink3);text-align:center;font-size:11px;">' + (r+1) + '</td>' +
+      '<td style="padding:4px 4px;border-bottom:1px solid var(--border);">' +
+        '<input type="date" id="cal-date-'+r+'" style="width:130px;padding:5px 7px;font-size:12px;background:var(--bg3);color:var(--ink);border:1px solid var(--border2);border-radius:6px;font-family:\'Share Tech Mono\',monospace;">' +
+      '</td>' +
+      '<td style="padding:4px 4px;border-bottom:1px solid var(--border);">' +
+        '<input type="time" id="cal-time-'+r+'" style="width:90px;padding:5px 7px;font-size:12px;background:var(--bg3);color:var(--ink);border:1px solid var(--border2);border-radius:6px;font-family:\'Share Tech Mono\',monospace;">' +
+      '</td>' +
+      '<td style="padding:4px 4px;border-bottom:1px solid var(--border);">' +
+        '<select id="cal-cur-'+r+'" style="width:80px;padding:5px 7px;font-size:12px;background:var(--bg3);color:var(--ink);border:1px solid var(--border2);border-radius:6px;font-family:\'Share Tech Mono\',monospace;">' +
+        '<option value="">---</option>' +
+        CAL_CURRENCY_OPTS.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('') +
+        '</select>' +
+      '</td>' +
+      '<td style="padding:4px 4px;border-bottom:1px solid var(--border);">' +
+        '<input type="text" id="cal-event-'+r+'" placeholder="例: CPI" style="width:140px;padding:5px 7px;font-size:12px;background:var(--bg3);color:var(--ink);border:1px solid var(--border2);border-radius:6px;font-family:\'Share Tech Mono\',monospace;">' +
+      '</td>' +
+      '<td style="padding:4px 4px;border-bottom:1px solid var(--border);">' +
+        '<select id="cal-imp-'+r+'" style="width:90px;padding:5px 7px;font-size:12px;background:var(--bg3);color:var(--ink);border:1px solid var(--border2);border-radius:6px;font-family:\'Share Tech Mono\',monospace;">' +
+        '<option value="">---</option>' +
+        CAL_IMPACT_OPTS.map(function(v){ return '<option value="'+v+'">'+v+'</option>'; }).join('') +
+        '</select>' +
+      '</td>';
+    tbody.appendChild(tr);
+  }
+}
+
+// calendar.json を生成してプレビューに表示
+function buildCalendarJson() {
+  var result = [];
+  for(var r = 0; r < CAL_ROWS; r++) {
+    var date  = (document.getElementById('cal-date-'+r)  || {}).value || '';
+    var time  = (document.getElementById('cal-time-'+r)  || {}).value || '';
+    var cur   = (document.getElementById('cal-cur-'+r)   || {}).value || '';
+    var event = (document.getElementById('cal-event-'+r) || {}).value || '';
+    var imp   = (document.getElementById('cal-imp-'+r)   || {}).value || '';
+    // 全欄空なら行ごとスキップ（要件4）
+    if(!date && !time && !cur && !event && !imp) continue;
+    // dateだけは必須とする（それ以外は空のまま出力）
+    result.push({
+      date:     date,
+      time:     time,
+      currency: cur,
+      event:    event,
+      impact:   imp
+    });
+  }
+  var json = JSON.stringify(result, null, 2);
+  document.getElementById('o-cal').textContent = json;
+}
+
+// calendar.json をコピー
+function copyCalendar() {
+  var txt = document.getElementById('o-cal').textContent;
+  navigator.clipboard.writeText(txt).then(function(){
+    var btns = document.querySelectorAll('.cbtn');
+    // コピーボタンはo-cal用のものを探す
+    var calCopyBtn = document.querySelector('#tc8 .cbtn');
+    if(calCopyBtn) {
+      calCopyBtn.textContent = 'コピー完了！';
+      calCopyBtn.classList.add('done');
+      setTimeout(function(){ calCopyBtn.textContent = 'コピー'; calCopyBtn.classList.remove('done'); }, 2000);
+    }
+  });
+}
+
+// カレンダー行を初期化（DOM読み込み後）
+(function initCal(){
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCalendarRows);
+  } else {
+    initCalendarRows();
+  }
+})();
+// =====================================================</script>
 </body>
 </html>
