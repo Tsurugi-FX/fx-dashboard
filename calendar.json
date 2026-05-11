@@ -4,6 +4,20 @@
     "time": "21:30",
     "currency": "USD",
     "event": "ＣＰＩ",
-    "impact": "HIGH"
+    "impact": "MEDIUM"
+  },
+  {
+    "date": "2026-05-13",
+    "time": "21:30",
+    "currency": "USD",
+    "event": "ＴＥＳＴ",
+    "impact": "MEDIUM"
+  },
+  {
+    "date": "2026-05-14",
+    "time": "22:30",
+    "currency": "GBP",
+    "event": "ｔｅｓｔ２",
+    "impact": "LOW"
   }
 ]
