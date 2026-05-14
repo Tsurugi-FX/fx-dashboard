@@ -1,9 +1,16 @@
 [
   {
-    "date": "2026-05-13",
+    "date": "2026-05-14",
+    "time": "15:00",
+    "currency": "GBP",
+    "event": "ＧＤＰ",
+    "impact": "HIGH"
+  },
+  {
+    "date": "2026-05-14",
     "time": "21:30",
     "currency": "USD",
-    "event": "ＰＰＩ",
+    "event": "小売売上高４月",
     "impact": "HIGH"
   }
 ]
