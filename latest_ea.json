@@ -4,20 +4,20 @@
     "long": 26,
     "short": 74,
     "diff": 48,
-    "change_long": -4
+    "change_long": 0
   },
   "EURUSD": {
     "signal": "WAIT",
-    "long": 65,
-    "short": 35,
-    "diff": 30,
-    "change_long": 0
+    "long": 62,
+    "short": 38,
+    "diff": 24,
+    "change_long": -3
   },
   "GBPUSD": {
     "signal": "WAIT",
-    "long": 68,
-    "short": 32,
-    "diff": 36,
-    "change_long": 0
+    "long": 51,
+    "short": 49,
+    "diff": 2,
+    "change_long": -17
   }
 }
