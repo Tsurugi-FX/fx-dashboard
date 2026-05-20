@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-05-20",
+    "topPair": "EUR/USD",
+    "bias": "SELL"
+  },
+  {
     "date": "2026-05-19",
     "topPair": "USD/JPY",
     "bias": "WAIT"

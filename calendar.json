@@ -1,16 +1,23 @@
 [
   {
-    "date": "2026-05-14",
+    "date": "2026-05-20",
     "time": "15:00",
     "currency": "GBP",
-    "event": "ＧＤＰ",
+    "event": "ＣＰＩ",
     "impact": "HIGH"
   },
   {
-    "date": "2026-05-14",
-    "time": "21:30",
+    "date": "2026-05-21",
+    "time": "03:00",
     "currency": "USD",
-    "event": "小売売上高４月",
+    "event": "ＦＯＭＣ議事録",
+    "impact": "HIGH"
+  },
+  {
+    "date": "2026-05-21",
+    "time": "22:45",
+    "currency": "USD",
+    "event": "ＰＭＩ",
     "impact": "HIGH"
   }
 ]
