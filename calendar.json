@@ -1,19 +1,5 @@
 [
   {
-    "date": "2026-05-20",
-    "time": "15:00",
-    "currency": "GBP",
-    "event": "ＣＰＩ",
-    "impact": "HIGH"
-  },
-  {
-    "date": "2026-05-21",
-    "time": "03:00",
-    "currency": "USD",
-    "event": "ＦＯＭＣ議事録",
-    "impact": "HIGH"
-  },
-  {
     "date": "2026-05-21",
     "time": "22:45",
     "currency": "USD",
